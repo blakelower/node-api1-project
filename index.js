@@ -7,6 +7,7 @@ const { find, findById, insert, update, remove } = require("./data/db.js");
 const server = express();
 server.use(express.json()); //added express.json to add exta functionality
 
+const PORT = process.env.PORT || 5000;
 
 //POST
 server.post("/api/users", (req, res) => {
@@ -99,3 +100,5 @@ server.put("/api/users/:id", (req, res) => {
         res.status(500).json({errorMessage: "The user information could not be modified."})
     })
 })
+
+server.listen(PORT, () => console.log(`Server started on port ${PORT}`))
