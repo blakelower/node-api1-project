@@ -2,6 +2,8 @@
 
 const express = require("express");
 
+const Users = require("./data/db.js")
+
 const { find, findById, insert, update, remove } = require("./data/db.js");
 
 const server = express();
@@ -12,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 //POST
 server.post("/api/users", (req, res) => {
   const userInfo = req.body;
-  insert(userInfo)
+  Users.insert(userInfo)
     .then(user => {
       if (userInfo.name && userInfo.bio) {
         res.status(201).json(user);
@@ -35,7 +37,7 @@ server.post("/api/users", (req, res) => {
 
 //GET
 server.get("/api/users", (req, res) => {
-  find()
+  Users.find()
     .then(user => {
       res.status(200).json(user);
     })
@@ -50,27 +52,29 @@ server.get("/api/users", (req, res) => {
 
 
 //GET BY ID
-server.get("api/users/:id", (req, res) => {
-  const { id } = req.params;
-  findById(id)
-  .then(user => {
-      if(user){
-          res.status(200).json(user)
-      } else {
-          res.status(404).json({ message: "The user with the specified ID does not exist."})
-      }
-  }) .catch(error => {
-    res
-    .status(500)
-    .json({ errorMessage: "The user information could not be retrieved." });
-  })
-});
+server.get("/api/users/:id", (req, res) => {
+    Users.findById(req.params.id)
+      .then(user => {
+        if (user) {
+          res.status(200).json(user);
+        } else {
+          res
+            .status(404)
+            .json({ message: "The user with the specified ID does not exist." });
+        }
+      })
+      .catch(() => {
+        res
+          .status(500)
+          .json({ errorMessage: "The user information could not be retrieved." });
+      });
+  });
 
 
 //DELETE
 server.delete("/api/users/:id", (req, res) => {
     const {id} = req.params
-    remove(id)
+    Users.remove(id)
     .then(user => {
         if (user){
             res.status(200).json('success')
@@ -89,7 +93,7 @@ server.delete("/api/users/:id", (req, res) => {
 
 //PUT
 server.put("/api/users/:id", (req, res) => {
-    update(req.params.id, req.body)
+    Users.update(req.params.id, req.body)
     .then(user => {
         if (user){
             res.status(200).json({success})
